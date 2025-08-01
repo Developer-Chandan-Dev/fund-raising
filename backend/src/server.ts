@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth';
+import campaignRoutes from './routes/campaigns';
 import { auth } from './middleware/auth';
 
 dotenv.config();
@@ -21,6 +22,8 @@ mongoose.connect(process.env.MONGO_URI as string)
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/campaigns', campaignRoutes);
+
 
 // Protected Test Route
 app.get('/api/protected', auth, (req, res) => {
