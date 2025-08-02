@@ -1,199 +1,147 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+// src/pages/DashboardPage.tsx
+import { useState } from 'react';
+import CampaignCard from '@/components/dashboard/CampaignCard';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { RecentSales } from '@/components/dashboard/RecentSales';
-import { OverviewChart } from '@/components/dashboard/OverviewChart';
-import { Skeleton } from '@/components/ui/skeleton';
 import { 
-  Activity, 
-  CreditCard, 
-  DollarSign, 
-  Users 
+  BarChart4, 
+  BadgeDollarSign, 
+  Users, 
+  ArrowRight 
 } from 'lucide-react';
 
 const DashboardPage = () => {
-  const { user, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    revenue: 0,
-    sales: 0,
-    customers: 0,
-    active: 0
+  const [stats] = useState({
+    activeCampaigns: 12,
+    tasksCompleted: 24,
+    contributions: 8,
   });
 
-  // Simulate data loading
-  useEffect(() => {
-    const fetchData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      setStats({
-        revenue: 45231.89,
-        sales: 2350,
-        customers: 1245,
-        active: 573
-      });
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading user data...</p>
-      </div>
-    );
-  }
+  const campaigns = [
+    {
+      id: '1',
+      title: 'Summer Internship Program',
+      description: 'Support 50 interns with summer housing and learning resources',
+      goalAmount: 50000,
+      raisedAmount: 34250,
+      image: '/campaign1.jpg',
+    },
+    {
+      id: '2',
+      title: 'Tech Skill Development',
+      description: 'Fund coding bootcamps for underprivileged interns',
+      goalAmount: 25000,
+      raisedAmount: 12750,
+      image: '/campaign2.jpg',
+    },
+    {
+      id: '3',
+      title: 'Mentorship Program',
+      description: 'Connect experienced professionals with interns for guidance',
+      goalAmount: 15000,
+      raisedAmount: 8250,
+      image: '/campaign3.jpg',
+    },
+  ];
 
   return (
-    <div className="flex flex-col">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {user.name}!
-          </p>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Button variant="outline">Settings</Button>
-          <Button onClick={logout}>Logout</Button>
-        </div>
-      </header>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        {/* Revenue Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Revenue
-            </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-3/4" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">${stats.revenue.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  +20.1% from last month
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Subscriptions Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Subscriptions
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-3/4" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">+{stats.active}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  +180.1% from last month
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Sales Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Sales
-            </CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-3/4" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">+{stats.sales.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  +19% from last month
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Active Now Card */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Active Now
-            </CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <Skeleton className="h-8 w-3/4" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">+{stats.customers}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  +201 since last hour
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Chart */}
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            {loading ? (
-              <Skeleton className="h-[350px] w-full" />
-            ) : (
-              <OverviewChart />
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Sales */}
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Sales</CardTitle>
-            <CardDescription>
-              You made 265 sales this month.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-6">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <Skeleton className="h-12 w-12 rounded-full" />
-                    <div className="space-y-2">
-                      <Skeleton className="h-4 w-[100px]" />
-                      <Skeleton className="h-4 w-[70px]" />
-                    </div>
-                    <Skeleton className="h-4 w-[50px] ml-auto" />
-                  </div>
-                ))}
+    <div className="flex min-h-screen">
+     
+      <main className="flex-1 bg-gray-50 p-8 overflow-auto">
+        <div className="max-w-6xl mx-auto">
+          {/* Welcome Banner */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white mb-8">
+            <h1 className="text-3xl font-bold mb-2">Welcome back, Intern!</h1>
+            <p className="text-blue-100 max-w-2xl">
+              You've made a difference in 8 campaigns so far. Keep supporting fellow interns!
+            </p>
+          </div>
+          
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-700">Active Campaigns</h3>
+                <div className="bg-blue-100 p-2 rounded-lg">
+                  <BarChart4 className="text-blue-600" size={20} />
+                </div>
               </div>
-            ) : (
-              <RecentSales />
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              <p className="text-3xl font-bold">{stats.activeCampaigns}</p>
+              <p className="text-sm text-gray-500 mt-1">+2 from last week</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-700">Tasks Completed</h3>
+                <div className="bg-green-100 p-2 rounded-lg">
+                  <BadgeDollarSign className="text-green-600" size={20} />
+                </div>
+              </div>
+              <p className="text-3xl font-bold">{stats.tasksCompleted}</p>
+              <p className="text-sm text-gray-500 mt-1">+5 from last week</p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-700">Your Contributions</h3>
+                <div className="bg-purple-100 p-2 rounded-lg">
+                  <Users className="text-purple-600" size={20} />
+                </div>
+              </div>
+              <p className="text-3xl font-bold">{stats.contributions}</p>
+              <p className="text-sm text-gray-500 mt-1">+3 from last week</p>
+            </div>
+          </div>
+          
+          {/* Active Campaigns Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Active Campaigns</h2>
+              <Button variant="outline">
+                View all campaigns
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {campaigns.map((campaign) => (
+                <CampaignCard key={campaign.id} campaign={campaign} />
+              ))}
+            </div>
+          </div>
+          
+          {/* Progress Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h2 className="text-xl font-bold text-gray-800 mb-6">Your Progress</h2>
+            
+            <div className="space-y-6">
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Fundraising Skills</span>
+                  <span className="text-sm font-medium text-gray-700">75%</span>
+                </div>
+                <Progress value={75} className="h-2" />
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Networking</span>
+                  <span className="text-sm font-medium text-gray-700">60%</span>
+                </div>
+                <Progress value={60} className="h-2" />
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">Campaign Management</span>
+                  <span className="text-sm font-medium text-gray-700">45%</span>
+                </div>
+                <Progress value={45} className="h-2" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
