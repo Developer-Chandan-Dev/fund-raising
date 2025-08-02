@@ -1,22 +1,39 @@
-import { Navigate } from 'react-router-dom';
-import AuthForm from '@/components/auth/AuthForm';
-import { FormWrapper } from '@/components/auth/FormWrapper';
-import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthForm from "@/components/auth/AuthForm";
+import { FormWrapper } from "@/components/auth/FormWrapper";
+import { useAuth } from "@/context/AuthContext";
 
 const SignUpPage = () => {
-  const [isLoading, setIsLoading ] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, register } = useAuth();
-
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />
-  }
+  const navigate = useNavigate();
 
   const handleSubmit = async (values: { name: string; email: string; password: string }) => {
     setIsLoading(true);
-    await register(values.name, values.email, values.password)
-    setIsLoading(false);
+    setError('');
+    
+    try {
+      const success = await register(values.name, values.email, values.password);
+      if (success) {
+        navigate("/dashboard");
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    } catch (err) {
+      console.log(err);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isAuthenticated) {
+    navigate("/dashboard");
+    return null;
   }
+
   return (
     <FormWrapper
       title="Create an account"
@@ -30,6 +47,11 @@ const SignUpPage = () => {
         onSubmit={handleSubmit} 
         isLoading={isLoading} 
       />
+      {error && (
+        <div className="text-red-500 text-center mt-4">
+          {error}
+        </div>
+      )}
     </FormWrapper>
   );
 };

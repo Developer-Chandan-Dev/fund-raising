@@ -6,7 +6,7 @@ import User, { IUser } from '../models/User';
 const router = express.Router();
 
 // Register
-router.post('/register', 
+router.post('/register',
   [
     body('name').notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
@@ -19,7 +19,7 @@ router.post('/register',
     }
 
     const { name, email, password } = req.body;
-    
+
     try {
       let user: IUser | null = await User.findOne({ email });
       if (user) {
@@ -30,12 +30,12 @@ router.post('/register',
       await user.save();
 
       const token = jwt.sign(
-        { userId: user.id }, 
+        { userId: user.id },
         process.env.JWT_SECRET!,
         { expiresIn: '1d' }
       );
 
-      res.status(201).json({ token });
+      res.status(201).json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role }, token });
     } catch (err) {
       console.error(err);
       res.status(500).send('Server error');
@@ -44,7 +44,7 @@ router.post('/register',
 );
 
 // Login
-router.post('/login', 
+router.post('/login',
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').exists().withMessage('Password is required')
@@ -56,7 +56,7 @@ router.post('/login',
     }
 
     const { email, password } = req.body;
-
+    console.log(email, password);
     try {
       const user: IUser | null = await User.findOne({ email });
       if (!user) {
@@ -69,12 +69,12 @@ router.post('/login',
       }
 
       const token = jwt.sign(
-        { userId: user.id }, 
+        { userId: user.id },
         process.env.JWT_SECRET!,
         { expiresIn: '1d' }
       );
 
-      res.json({ token });
+      res.json({ user: { _id: user._id, name: user.name, email: user.email, role: user.role }, token });
     } catch (err) {
       console.error(err);
       res.status(500).send('Server error');

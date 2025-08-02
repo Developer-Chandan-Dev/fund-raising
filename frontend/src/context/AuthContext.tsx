@@ -1,100 +1,140 @@
+import apiClient from "@/api/client";
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
+  useEffect,
   type ReactNode,
 } from "react";
+// import { useNavigate } from 'react-router-dom';
 
+// Define user type
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+// Define auth context type
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: { name: string; email: string } | null;
+  user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
   register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
   isLoading: boolean;
 }
 
 // Create context with default values
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext<AuthContextType>({
+const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   user: null,
+  token: null,
   login: async () => {},
-  logout: () => {},
   register: async () => {},
+  logout: () => {},
   isLoading: true,
 });
 
+// Auth provider
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(
-    null
-  );
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  // const navigate = useNavigate();
 
+  // Initialize auth state from localStorage on mount
   useEffect(() => {
-    // Check for existing auth state (token in localStorage)
-    const checkAuth = async () => {
+    const initAuth = async () => {
       try {
-        // In a real app, you would check for a token in localStorage/cookies
-        const token = localStorage.getItem("authToken");
+        const storedToken = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("user");
 
-        if (token) {
-          // Validate token (simulated)
-          await new Promise((resolve) => setTimeout(resolve, 500));
+        if (storedToken && storedUser) {
+          // In a real app, you would validate the token with the backend
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
-          setUser({ name: "John Doe", email: "john@example.com" });
         }
       } catch (error) {
-        console.error("Auth check failed:", error);
+        console.error("Failed to initialize auth:", error);
+        logout();
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    initAuth();
   }, []);
 
+  // Handle login
   const login = async (email: string, password: string) => {
     setIsLoading(true);
+
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await apiClient.post("/auth/login", { email, password });
+      const { token } = res.data;
+      const { user } = res.data;
 
-      // In a real app, you would get user data from the API response
+      // Save to state and localStorage
+      setUser(user);
+      setToken(token);
       setIsAuthenticated(true);
-      setUser({ name: "John Doe", email });
-      localStorage.setItem("authToken", "dummy-token");
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect to dashboard
+      // navigate('/dashboard');
     } catch (error) {
       console.error("Login failed:", error);
-      throw error;
+      throw new Error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem("authToken");
-  };
-
+  // Handle registration
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
+
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const res = await apiClient.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+      const { token } = res.data;
 
+      // Save to state and localStorage
+      setUser(user);
+      setToken(token);
       setIsAuthenticated(true);
-      setUser({ name, email });
-      localStorage.setItem("authToken", "dummy-token");
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      // Redirect to dashboard
+      // navigate('/dashboard');
     } catch (error) {
       console.error("Registration failed:", error);
-      throw error;
+      throw new Error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Handle logout
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // navigate('/signin');
   };
 
   return (
@@ -102,9 +142,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         isAuthenticated,
         user,
+        token,
         login,
-        logout,
         register,
+        logout,
         isLoading,
       }}
     >
@@ -113,7 +154,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// Custom hook to use auth context
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+
+  return context;
 };
