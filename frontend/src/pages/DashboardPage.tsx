@@ -10,10 +10,11 @@ import EmptyState from "@/components/dashboard/EmptyState";
 import apiService from "@/api/client";
 
 const DashboardPage = () => {
+  const [activeCampaigns, setActiveCampaigns] = useState(0);
+  const [contributions, setContributions] = useState(0);
   const [stats] = useState({
-    activeCampaigns: 12,
     tasksCompleted: 24,
-    contributions: 8,
+    // contributions: 8,
   });
 
   const { campaigns, loading, error, fetchCampaigns } = useCampaigns({
@@ -28,7 +29,11 @@ const DashboardPage = () => {
   const fetchCardData = async () => {
     try {
       const response = await apiService.getCardData();
-      console.log(response);
+      console.log(response.data);
+      if (response) {
+        setActiveCampaigns(response.data.activeCampaigns);
+        setContributions(response.data.contributions);
+      }
     } catch (error) {
       console.log("Failed to getting card data", error);
     }
@@ -61,7 +66,7 @@ const DashboardPage = () => {
                   <BarChart4 className="text-blue-600" size={20} />
                 </div>
               </div>
-              <p className="text-3xl font-bold">{stats.activeCampaigns}</p>
+              <p className="text-3xl font-bold">{activeCampaigns || 0}</p>
               <p className="text-sm text-gray-500 mt-1">+2 from last week</p>
             </div>
 
@@ -87,7 +92,7 @@ const DashboardPage = () => {
                   <Users className="text-purple-600" size={20} />
                 </div>
               </div>
-              <p className="text-3xl font-bold">{stats.contributions}</p>
+              <p className="text-3xl font-bold">{contributions || 0}</p>
               <p className="text-sm text-gray-500 mt-1">+3 from last week</p>
             </div>
           </div>
@@ -123,8 +128,8 @@ const DashboardPage = () => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {campaigns.map((campaign) => (
-                <CampaignCard key={campaign._id} campaign={campaign} />
+              {campaigns.map((campaign, index) => (
+                <CampaignCard key={index} campaign={campaign} />
               ))}
             </div>
           </div>

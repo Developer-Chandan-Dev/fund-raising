@@ -300,9 +300,6 @@ export const donateToCampaign = async (req: Request, res: Response) => {
     campaign.raisedAmount += donation.amount;
 
     // Update donors count if not anonymous
-    console.log(req.user, 297);
-
-    // Update donors count if not anonymous
     if (!anonymous && req.user) {
       try {
         const updatedUser = await User.findByIdAndUpdate(

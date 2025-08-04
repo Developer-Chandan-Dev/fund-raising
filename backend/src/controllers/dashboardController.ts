@@ -61,13 +61,17 @@ import User from '../models/User';
 
 export const cardData = async (req: Request, res: Response) => {
     try {
-        const activeCampainions = await Campaign.find({ status: 'active' }).countDocuments();
-        const contribution = await User.find({}).select('contributions');
-        // const completedTask = await User.find({}).select('completedTasks').sum('completedTasks');
-        console.log(activeCampainions, contribution, 68);
-        return res.json({ activeCampainions, contribution });
+        const activeCampaigns = await Campaign.countDocuments({ status: "active" });
+
+        const users = await User.find({}, { contributions: 1 }).lean(); // lean for plain objects
+        const contributions = users.map(u => ({
+            id: u._id.toString(),
+            contributions: u.contributions ?? 0, // guard in case it's missing
+        }));
+
+        return res.json({success: true, activeCampaigns, contributions: contributions[0].contributions });
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Server error' });
+        console.error(error);
+        return res.status(500).json({ message: "Server error", success:false });
     }
-}
+};

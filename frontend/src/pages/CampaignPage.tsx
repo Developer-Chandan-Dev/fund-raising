@@ -46,7 +46,7 @@ const CampaignPage = () => {
     setPage(newPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+  
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -109,9 +109,9 @@ const CampaignPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {campaigns &&
               campaigns?.length !== 0 &&
-              campaigns.map((campaign) => (
+              campaigns.map((campaign, index) => (
                 <CampaignCard
-                  key={campaign._id}
+                  key={index}
                   campaign={campaign}
                   showStatus={true}
                 />

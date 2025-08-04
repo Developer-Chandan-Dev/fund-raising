@@ -180,7 +180,7 @@ const CommunityPage = () => {
             <CardContent className="p-6 space-y-4">
               <div className="flex space-x-4">
                 <Avatar>
-                  <AvatarImage src={user?.avatarUrl} />
+                  {/* <AvatarImage src={user?.avatarUrl || ''} /> */}
                   <AvatarFallback>{user?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">

@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import apiService from "@/api/client";
 import { toast } from "sonner";
+import isAxiosError from "@/utility/isAxiosError";
 
 interface CampaignFormData {
   title: string;
@@ -49,15 +50,17 @@ const CreateCampaignPage = () => {
         formData.append("image", data.image[0]); // Keep this as 'image'
       }
 
-      const res = await apiService.createCampaign(formData);
+      await apiService.createCampaign(formData);
       toast.success("Campaign created successfully!", { id: toastId });
       navigate("/admin/campaigns");
     } catch (error) {
-      console.error("Failed to create campaign:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to create campaign",
-        { id: toastId }
-      );
+      if (isAxiosError(error)) {
+        toast.error(error.response.data.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to add donation");
+      }
     } finally {
       setIsLoading(false);
     }

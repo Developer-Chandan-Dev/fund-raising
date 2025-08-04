@@ -10,24 +10,23 @@ const SignInPage = () => {
   const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: { email: string; password: string }) => {
+  const handleSubmit = async (
+    values: { email: string; password: string },
+    { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
+  ) => {
     setIsLoading(true);
-    // setError("");
+    setError("");
 
     try {
-      const result = await login(values.email, values.password);
-        console.log(result);
-      if (result?.success === true) {
-        navigate("/dashboard");
-      } else {
-        console.log(result);
-        setError(result?.message || "Invalid credentials. Please try again.");
-      }
+      const res = await login(values.email, values.password);
+      console.log(res);
+      navigate("/dashboard");
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
       console.error("Sign-in error:", err);
     } finally {
       setIsLoading(false);
+      setSubmitting(false);
     }
   };
 

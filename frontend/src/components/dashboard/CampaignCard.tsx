@@ -7,19 +7,17 @@ import { Bookmark, Heart, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import apiService from "@/api/client";
 
-interface Campaign {
-  _id: string;
-  title: string;
-  description: string;
-  goalAmount: number;
-  raisedAmount: number;
-  category?: string;
-  status?: "active" | "completed";
-  imageUrl?: string;
-}
-
 interface CampaignCardProps {
-  campaign: Campaign;
+  campaign: {
+    _id?: string;
+    title: string;
+    description: string;
+    goalAmount: number;
+    raisedAmount: number;
+    category?: string;
+    status?: "active" | "completed";
+    imageUrl?: string;
+  };
   showStatus?: boolean;
 }
 
@@ -33,6 +31,9 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
 
   const handleSave = async () => {
     try {
+      if(!campaign._id){
+        return;
+      }
       await apiService.saveCampaign(campaign._id);
       setIsSaved(!isSaved);
     } catch (error) {
@@ -42,6 +43,9 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
 
   const handleLike = async () => {
     try {
+      if(!campaign._id){
+        return;
+      }
       await apiService.likeCampaign(campaign._id);
       setIsLiked(!isLiked);
     } catch (error) {

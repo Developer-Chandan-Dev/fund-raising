@@ -56,7 +56,6 @@ router.post('/login',
     }
 
     const { email, password } = req.body;
-    console.log(email, password);
     try {
       const user: IUser | null = await User.findOne({ email });
       if (!user) {

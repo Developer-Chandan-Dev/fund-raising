@@ -15,6 +15,7 @@ import {
 import { Loader2 } from "lucide-react";
 import apiService from "@/api/client";
 import { toast } from "sonner";
+import isAxiosError from "@/utility/isAxiosError";
 
 interface ContributeModalProps {
   campaignId: string;
@@ -29,7 +30,7 @@ const ContributeModal = ({
   campaignTitle,
   open,
   onOpenChange,
-  onDonationSuccess
+  onDonationSuccess,
 }: ContributeModalProps) => {
   const [amount, setAmount] = useState<number>(0);
   const [message, setMessage] = useState("");
@@ -53,16 +54,18 @@ const ContributeModal = ({
       setAmount(0);
       setMessage("");
       setAnonymous(false);
-       onDonationSuccess(); // Call the success callback
-    } catch (error: unknown) {
-      console.error("Donation failed:", error);
-      toast.error(error.response?.data?.message || "Failed to add donation", {
-        id: toastId,
-      });
+      onDonationSuccess(); // Call the success callback
+    } catch (error) {
+      if (isAxiosError(error)) {
+        toast.error(error.response.data.message);
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to add donation");
+      }
     } finally {
       setIsLoading(false);
       onOpenChange(false);
-
     }
   };
 

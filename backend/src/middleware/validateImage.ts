@@ -2,9 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 
 export const validateImage = (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.file, 4);
   if (!req.file) return next();
-    console.log(req.file, 6);
   const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
   const maxSize = 5 * 1024 * 1024; // 5MB
 
