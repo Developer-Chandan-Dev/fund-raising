@@ -19,7 +19,7 @@ const DashboardPage = () => {
 
   const campaigns = [
     {
-      id: '1',
+      _id: '1',
       title: 'Summer Internship Program',
       description: 'Support 50 interns with summer housing and learning resources',
       goalAmount: 50000,
@@ -27,7 +27,7 @@ const DashboardPage = () => {
       image: '/campaign1.jpg',
     },
     {
-      id: '2',
+      _id: '2',
       title: 'Tech Skill Development',
       description: 'Fund coding bootcamps for underprivileged interns',
       goalAmount: 25000,
@@ -35,7 +35,7 @@ const DashboardPage = () => {
       image: '/campaign2.jpg',
     },
     {
-      id: '3',
+      _id: '3',
       title: 'Mentorship Program',
       description: 'Connect experienced professionals with interns for guidance',
       goalAmount: 15000,
@@ -47,7 +47,7 @@ const DashboardPage = () => {
   return (
     <div className="flex min-h-screen">
      
-      <main className="flex-1 bg-gray-50 p-8 overflow-auto">
+      <main className="flex-1 bg-gray-50 px-4 py-8 sm:p-8 overflow-auto">
         <div className="max-w-6xl mx-auto">
           {/* Welcome Banner */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white mb-8">
@@ -95,7 +95,7 @@ const DashboardPage = () => {
           
           {/* Active Campaigns Section */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 flex-wrap gap-3">
               <h2 className="text-xl font-bold text-gray-800">Active Campaigns</h2>
               <Button variant="outline">
                 View all campaigns
@@ -105,7 +105,7 @@ const DashboardPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {campaigns.map((campaign) => (
-                <CampaignCard key={campaign.id} campaign={campaign} />
+                <CampaignCard key={campaign._id} campaign={campaign} />
               ))}
             </div>
           </div>

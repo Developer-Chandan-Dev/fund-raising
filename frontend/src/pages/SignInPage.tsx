@@ -12,18 +12,20 @@ const SignInPage = () => {
 
   const handleSubmit = async (values: { email: string; password: string }) => {
     setIsLoading(true);
-    setError('');
-    
+    // setError("");
+
     try {
-      const success = await login(values.email, values.password);
-      if (success) {
+      const result = await login(values.email, values.password);
+        console.log(result);
+      if (result?.success === true) {
         navigate("/dashboard");
       } else {
-        setError('Invalid credentials. Please try again.');
+        console.log(result);
+        setError(result?.message || "Invalid credentials. Please try again.");
       }
     } catch (err) {
-      console.log(err);
-      setError('An unexpected error occurred. Please try again.');
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Sign-in error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -34,24 +36,17 @@ const SignInPage = () => {
     return null;
   }
 
+  console.log("Error: ", error);
   return (
     <FormWrapper
       title="Welcome back"
       description="Enter your credentials to access your account"
       footerText="Don't have an account?"
-      footerLink="/signup"
+      footerLink="/auth/signup"
       footerLinkText="Sign up"
     >
-      <AuthForm 
-        type="signin" 
-        onSubmit={handleSubmit} 
-        isLoading={isLoading} 
-      />
-      {error && (
-        <div className="text-red-500 text-center mt-4">
-          {error}
-        </div>
-      )}
+      <AuthForm type="signin" onSubmit={handleSubmit} isLoading={isLoading} />
+      {error && <div className="text-red-500 text-center mt-4">{error}</div>}
     </FormWrapper>
   );
 };

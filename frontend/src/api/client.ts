@@ -24,21 +24,36 @@ apiClient.interceptors.request.use((config) => {
 
 // API endpoints
 const apiService = {
+  // Auth endpoints
+  login: (email: string, password: string) => apiClient.post('/auth/login', { email, password }),
+  register: (name: string, email: string, password: string) => apiClient.post('/auth/register', { name, email, password }),
+
   // Campaign endpoints
   getCampaigns: (params = {}) => apiClient.get('/campaigns', { params }),
   getCampaignById: (id: string) => apiClient.get(`/campaigns/${id}`),
-  createCampaign: (data: FormData) => apiClient.post('/campaigns', data),
-  
+  createCampaign: (data: FormData) => apiClient.post('/campaigns', data, {
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'multipart/form-data', // Required for file uploads
+    }
+  }),
+
+  donateToCampaign: (campaignId: string, data: {
+    amount: number;
+    message?: string;
+    anonymous?: boolean;
+  }) => apiClient.post(`/donations/${campaignId}`, data),
+
   // Community endpoints
-  getCommunityMembers: (params = {}) => apiClient.get('/community/members', { params }),
-  getCommunityPosts: (params = {}) => apiClient.get('/community/posts', { params }),
-  createPost: (content: string) => apiClient.post('/community/posts', { content }),
-  likePost: (postId: string) => apiClient.post(`/community/posts/${postId}/like`),
-  
+  getCommunityMembers: (params = {}) => apiClient.get('/community/members', { params, withCredentials: true }),
+  getCommunityPosts: (params = {}) => apiClient.get('/community/posts', { params, withCredentials: true }),
+  createPost: (content: string) => apiClient.post('/community/posts', { content }, { withCredentials: true }),
+  likePost: (postId: string) => apiClient.post(`/community/posts/${postId}/like`, { withCredentials: true }),
+
   // User endpoints
-  followUser: (userId: string) => apiClient.post(`/users/${userId}/follow`),
-  saveCampaign: (campaignId: string) => apiClient.post(`/campaigns/${campaignId}/save`),
-  likeCampaign: (campaignId: string) => apiClient.post(`/campaigns/${campaignId}/like`),
+  followUser: (userId: string) => apiClient.post(`/users/${userId}/follow`, { withCredentials: true }),
+  saveCampaign: (campaignId: string) => apiClient.post(`/campaigns/${campaignId}/save`, { withCredentials: true }),
+  likeCampaign: (campaignId: string) => apiClient.post(`/campaigns/${campaignId}/like`, { withCredentials: true }),
 };
 
 export default apiService;

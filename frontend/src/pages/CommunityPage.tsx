@@ -55,7 +55,7 @@ const CommunityPage = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 sm:mb-8 gap-4">
         <h1 className="text-2xl font-bold">Intern Community</h1>
         
         <div className="w-full md:w-1/3">
@@ -67,7 +67,7 @@ const CommunityPage = () => {
         </div>
       </div>
 
-      <div className="flex space-x-4 mb-6">
+      <div className="flex space-x-2 sm:space-x-4 space-y-2 mb-6 flex-wrap">
         <Button
           variant={activeTab === 'all' ? 'default' : 'outline'}
           onClick={() => setActiveTab('all')}

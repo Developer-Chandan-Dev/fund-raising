@@ -1,4 +1,5 @@
-import apiClient from "@/api/client";
+// import apiClient from "@/api/client";
+import axios from "axios";
 import {
   createContext,
   useContext,
@@ -26,6 +27,9 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
 }
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // Create context with default values
 const AuthContext = createContext<AuthContextType>({
@@ -76,7 +80,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       // Simulate API call
-      const res = await apiClient.post("/auth/login", { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+        email,
+        password,
+      });
       const { token } = res.data;
       const { user } = res.data;
 
@@ -87,11 +94,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect to dashboard
-      // navigate('/dashboard');
-    } catch (error) {
-      console.error("Login failed:", error);
-      throw new Error("Login failed. Please try again.");
+      return res.data;
+    } catch (error: any) {
+      let errorMessage = "Login failed. Please try again.";
+
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      return {
+        success: false,
+        message: errorMessage,
+      };
     } finally {
       setIsLoading(false);
     }
@@ -103,13 +119,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       // Simulate API call
-      const res = await apiClient.post("/auth/register", {
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, {
         name,
         email,
         password,
       });
-      const { token } = res.data;
 
+      const { token } = res.data;
+      const { user } = res.data;
       // Save to state and localStorage
       setUser(user);
       setToken(token);
@@ -117,8 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect to dashboard
-      // navigate('/dashboard');
+      return res.data;
     } catch (error) {
       console.error("Registration failed:", error);
       throw new Error("Registration failed. Please try again.");

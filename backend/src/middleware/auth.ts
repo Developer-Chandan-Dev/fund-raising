@@ -16,12 +16,14 @@ interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-export const auth = async (
+export const protect = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.header('x-auth-token');
+
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ message: 'No token, authorization denied' });

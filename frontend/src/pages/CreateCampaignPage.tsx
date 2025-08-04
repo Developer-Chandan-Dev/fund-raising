@@ -1,12 +1,15 @@
 // src/pages/CreateCampaignPage.tsx
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import apiService from "@/api/client";
+import { toast } from "sonner";
 
 interface CampaignFormData {
   title: string;
@@ -18,53 +21,83 @@ interface CampaignFormData {
 }
 
 const CreateCampaignPage = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<CampaignFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CampaignFormData>();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data: CampaignFormData) => {
     setIsLoading(true);
+    const toastId = toast.loading("Creating campaign...");
+
     try {
-      // In a real app, you would upload the image and create the campaign
-      console.log('Creating campaign:', data);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      navigate('/admin');
+      const formData = new FormData();
+
+      // Ensure these field names match your backend exactly
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("goalAmount", data.goalAmount.toString());
+      formData.append("category", data.category);
+      formData.append("endDate", data.endDate);
+
+      // Most important - ensure 'image' matches Multer's field name
+      if (data.image && data.image.length > 0) {
+        formData.append("image", data.image[0]); // Keep this as 'image'
+      }
+
+      const res = await apiService.createCampaign(formData);
+      toast.success("Campaign created successfully!", { id: toastId });
+      navigate("/admin/campaigns");
     } catch (error) {
-      console.error('Failed to create campaign:', error);
+      console.error("Failed to create campaign:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to create campaign",
+        { id: toastId }
+      );
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (user?.role !== 'admin') {
+  if (user?.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Create New Campaign</h1>
-      
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <Label htmlFor="title">Campaign Title</Label>
           <Input
             id="title"
-            {...register('title', { required: 'Title is required' })}
+            {...register("title", { required: "Title is required" })}
             placeholder="Help Interns Learn New Skills"
           />
-          {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+          )}
         </div>
 
         <div>
           <Label htmlFor="description">Description</Label>
           <Textarea
             id="description"
-            {...register('description', { required: 'Description is required' })}
+            {...register("description", {
+              required: "Description is required",
+            })}
             rows={5}
             placeholder="Explain what this campaign is about and how the funds will be used..."
           />
-          {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+          {errors.description && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.description.message}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -73,12 +106,16 @@ const CreateCampaignPage = () => {
             <Input
               id="goalAmount"
               type="number"
-              {...register('goalAmount', { 
-                required: 'Goal amount is required',
-                min: { value: 100, message: 'Minimum goal is $100' }
+              {...register("goalAmount", {
+                required: "Goal amount is required",
+                min: { value: 100, message: "Minimum goal is $100" },
               })}
             />
-            {errors.goalAmount && <p className="text-red-500 text-sm mt-1">{errors.goalAmount.message}</p>}
+            {errors.goalAmount && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.goalAmount.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -86,9 +123,13 @@ const CreateCampaignPage = () => {
             <Input
               id="endDate"
               type="date"
-              {...register('endDate', { required: 'End date is required' })}
+              {...register("endDate", { required: "End date is required" })}
             />
-            {errors.endDate && <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>}
+            {errors.endDate && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.endDate.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -96,7 +137,7 @@ const CreateCampaignPage = () => {
           <Label htmlFor="category">Category</Label>
           <select
             id="category"
-            {...register('category', { required: 'Category is required' })}
+            {...register("category", { required: "Category is required" })}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <option value="">Select a category</option>
@@ -104,8 +145,17 @@ const CreateCampaignPage = () => {
             <option value="housing">Housing</option>
             <option value="career">Career Development</option>
             <option value="community">Community Building</option>
+            <option value="environment">Environment</option>
+            <option value="health">Health</option>
+            <option value="animals">Animals</option>
+            <option value="arts">Arts</option>
+            <option value="technology">Technology</option>
           </select>
-          {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
+          {errors.category && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.category.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -114,7 +164,7 @@ const CreateCampaignPage = () => {
             id="image"
             type="file"
             accept="image/*"
-            {...register('image')}
+            {...register("image")}
           />
           <p className="text-sm text-muted-foreground mt-1">
             Upload a high-quality image that represents your campaign
@@ -122,10 +172,10 @@ const CreateCampaignPage = () => {
         </div>
 
         <div className="flex justify-end space-x-4">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={() => navigate('/admin')}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate("/admin")}
           >
             Cancel
           </Button>
@@ -135,7 +185,9 @@ const CreateCampaignPage = () => {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Creating...
               </>
-            ) : 'Create Campaign'}
+            ) : (
+              "Create Campaign"
+            )}
           </Button>
         </div>
       </form>

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import { auth, admin } from '../middleware/auth';
+import { protect, admin } from '../middleware/auth';
 import Campaign from '../models/Campaign';
 import { IUser } from '../models/User';
 
@@ -41,7 +41,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 router.post(
   '/',
   [
-    auth,
+    protect,
     admin,
     body('title').notEmpty().withMessage('Title is required'),
     body('description').notEmpty().withMessage('Description is required'),
@@ -76,12 +76,12 @@ router.post(
 );
 
 // Update campaign (admin only)
-router.put('/:id', [auth, admin], async (req: Request, res: Response) => {
+router.put('/:id', [protect, admin], async (req: Request, res: Response) => {
   // Similar to create but with update logic
 });
 
 // Delete campaign (admin only)
-router.delete('/:id', [auth, admin], async (req: Request, res: Response) => {
+router.delete('/:id', [protect, admin], async (req: Request, res: Response) => {
   try {
     const campaign = await Campaign.findByIdAndUpdate(
       req.params.id,

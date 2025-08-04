@@ -111,7 +111,7 @@ const CampaignPage = () => {
               campaigns?.length !== 0 &&
               campaigns.map((campaign) => (
                 <CampaignCard
-                  key={campaign.id}
+                  key={campaign._id}
                   campaign={campaign}
                   showStatus={true}
                 />

@@ -1,8 +1,9 @@
 // src/components/ContributeModal.tsx
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -10,65 +11,89 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from '@/components/ui/dialog';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/dialog";
+import { Loader2 } from "lucide-react";
+import apiService from "@/api/client";
+import { toast } from "sonner";
 
 interface ContributeModalProps {
   campaignId: string;
   campaignTitle: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onDonationSuccess: () => void; // Callback for success
 }
 
-const ContributeModal = ({ 
+const ContributeModal = ({
   campaignId,
   campaignTitle,
   open,
   onOpenChange,
+  onDonationSuccess
 }: ContributeModalProps) => {
-  const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState('');
+  const [amount, setAmount] = useState<number>(0);
+  const [message, setMessage] = useState("");
+  const [anonymous, setAnonymous] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleContribute = async () => {
+  const handleContribute = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
+    const toastId = toast.loading("Donation processing...");
+
     try {
-      // In a real app, you would process the contribution
-      console.log(`Contributing $${amount} to campaign ${campaignId}`);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onOpenChange(false);
-      // Show success toast
-    } catch (error) {
-      console.error('Contribution failed:', error);
+      await apiService.donateToCampaign(campaignId, {
+        amount,
+        message,
+        anonymous,
+      });
+      // Show success message
+      toast.success("Donation added successfully!", { id: toastId });
+      // Refresh campaign data
+      setAmount(0);
+      setMessage("");
+      setAnonymous(false);
+       onDonationSuccess(); // Call the success callback
+    } catch (error: unknown) {
+      console.error("Donation failed:", error);
+      toast.error(error.response?.data?.message || "Failed to add donation", {
+        id: toastId,
+      });
     } finally {
       setIsLoading(false);
+      onOpenChange(false);
+
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Support {campaignTitle}</DialogTitle>
           <DialogDescription>
             Your contribution will help make this campaign successful.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 py-4">
           <div>
-            <Label htmlFor="amount">Contribution Amount ($)</Label>
+            <Label htmlFor="amount" className="py-2">
+              Contribution Amount ($)
+            </Label>
             <Input
               id="amount"
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(Number(e.target.value))}
               placeholder="50.00"
             />
           </div>
-          
+
           <div>
-            <Label htmlFor="message">Encouraging Message (Optional)</Label>
+            <Label htmlFor="message" className="py-2">
+              Encouraging Message (Optional)
+            </Label>
             <Input
               id="message"
               value={message}
@@ -76,26 +101,35 @@ const ContributeModal = ({
               placeholder="Keep up the great work!"
             />
           </div>
+          <div className="flex items-center mb-4">
+            <Checkbox
+              id="anonymous"
+              checked={anonymous}
+              onCheckedChange={() => setAnonymous(!anonymous)}
+            />
+            <Label htmlFor="anonymous" className="ml-2">
+              Donate anonymously
+            </Label>
+          </div>
         </div>
-        
+
         <DialogFooter>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleContribute}
-            disabled={!amount || isLoading}
-          >
+          <Button onClick={handleContribute} disabled={!amount || isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Processing...
               </>
-            ) : 'Contribute'}
+            ) : (
+              "Contribute"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

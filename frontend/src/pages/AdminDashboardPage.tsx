@@ -69,9 +69,9 @@ const AdminDashboardPage = () => {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 bg-gray-50 p-8 overflow-auto">
+      <main className="flex-1 bg-gray-50 px-4 py-8 sm:p-8 overflow-auto">
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-8 gap-2 flex-wrap">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 Admin Dashboard
@@ -115,7 +115,7 @@ const AdminDashboardPage = () => {
 
           {/* Recent Campaigns */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-6 flex-wrap gap-2">
               <h2 className="text-xl font-bold text-gray-800">
                 Recent Campaigns
               </h2>

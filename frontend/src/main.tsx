@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import "./index.css";
+import { Toaster } from "@/components/ui/sonner";
 
 // Layouts
 import RootLayout from "./layouts/RootLayout";
@@ -95,6 +96,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
+      <Toaster />
     </AuthProvider>
   </React.StrictMode>
 );

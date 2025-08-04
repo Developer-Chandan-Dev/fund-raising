@@ -8,14 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import apiService from "@/api/client";
 
 interface Campaign {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   goalAmount: number;
   raisedAmount: number;
   category?: string;
   status?: "active" | "completed";
-  image?: string;
+  imageUrl?: string;
 }
 
 interface CampaignCardProps {
@@ -33,7 +33,7 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
 
   const handleSave = async () => {
     try {
-      await apiService.saveCampaign(campaign.id);
+      await apiService.saveCampaign(campaign._id);
       setIsSaved(!isSaved);
     } catch (error) {
       console.error("Error saving campaign:", error);
@@ -42,17 +42,19 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
 
   const handleLike = async () => {
     try {
-      await apiService.likeCampaign(campaign.id);
+      await apiService.likeCampaign(campaign._id);
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error('Error liking campaign:', error);
+      console.error("Error liking campaign:", error);
     }
-  }
+  };
 
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
       <div className="relative">
-        <div className="bg-gray-200 border-2 border-dashed w-full h-48" />
+        <div className="bg-gray-200 border-2 border-dashed w-full h-48">
+          <img src={campaign.imageUrl} className="w-full h-full" />
+        </div>
         {showStatus && (
           <Badge
             variant={campaign.status === "completed" ? "default" : "secondary"}
@@ -91,7 +93,7 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
           </div>
 
           <div className="flex justify-between">
-            <Link to={`/campaigns/${campaign.id}`}>
+            <Link to={`/campaigns/${campaign._id}`}>
               <Button size="sm">View Details</Button>
             </Link>
 

@@ -10,20 +10,22 @@ const SignUpPage = () => {
   const { isAuthenticated, register } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: { name: string; email: string; password: string }) => {
+  const handleSubmit = async (
+    values: { name: string; email: string; password: string }
+  ) => {
     setIsLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
-      const success = await register(values.name, values.email, values.password);
-      if (success) {
+      const res = await register(values.name, values.email, values.password);
+      if (res?.success === true) {
         navigate("/dashboard");
       } else {
-        setError('Registration failed. Please try again.');
+        setError("Registration failed. Please try again.");
       }
     } catch (err) {
       console.log(err);
-      setError('An unexpected error occurred. Please try again.');
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -39,19 +41,11 @@ const SignUpPage = () => {
       title="Create an account"
       description="Get started with our platform"
       footerText="Already have an account?"
-      footerLink="/signin"
+      footerLink="/auth/signin"
       footerLinkText="Sign in"
     >
-      <AuthForm 
-        type="signup" 
-        onSubmit={handleSubmit} 
-        isLoading={isLoading} 
-      />
-      {error && (
-        <div className="text-red-500 text-center mt-4">
-          {error}
-        </div>
-      )}
+      <AuthForm type="signup" onSubmit={handleSubmit} isLoading={isLoading} />
+      {error && <div className="text-red-500 text-center mt-4">{error}</div>}
     </FormWrapper>
   );
 };
