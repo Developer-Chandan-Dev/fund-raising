@@ -52,7 +52,7 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
   return (
     <div className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
       <div className="relative">
-        <div className="bg-gray-200 border-2 border-dashed w-full h-48">
+        <div className="bg-gray-200 border-dashed overflow-hidden w-full h-48">
           <img src={campaign.imageUrl} className="w-full h-full" />
         </div>
         {showStatus && (

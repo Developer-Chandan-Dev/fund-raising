@@ -37,6 +37,9 @@ const apiService = {
       'Content-Type': 'multipart/form-data', // Required for file uploads
     }
   }),
+  getCardData: () => apiClient.get('/cards', {
+    withCredentials: true,
+  }),
 
   donateToCampaign: (campaignId: string, data: {
     amount: number;

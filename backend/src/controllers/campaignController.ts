@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import Campaign from '../models/Campaign';
 import { deleteFromCloudinary, uploadToCloudinary } from '../config/cloudinary';
 import fs from 'fs/promises';
+import User from '../models/User';
 
 // @desc    Get all campaigns
 // @route   GET /api/campaigns
@@ -261,6 +262,12 @@ export const deleteCampaign = async (req: Request, res: Response) => {
 
 // src/controllers/donationController.ts
 export const donateToCampaign = async (req: Request, res: Response) => {
+  console.log('--- DONATE ENDPOINT HIT ---'); // Add this
+  console.log('Request body:', req.body); // Add this
+  console.log('Request params:', req.params); // Add this
+  console.log('User:', req.user); // Add this
+
+
   try {
     const { amount, message, anonymous } = req.body;
     const { campaignId } = req.params;
@@ -293,8 +300,20 @@ export const donateToCampaign = async (req: Request, res: Response) => {
     campaign.raisedAmount += donation.amount;
 
     // Update donors count if not anonymous
+    console.log(req.user, 297);
+
+    // Update donors count if not anonymous
     if (!anonymous && req.user) {
-      // Optional: Update user's total contributions if you have that field
+      try {
+        const updatedUser = await User.findByIdAndUpdate(
+          req.user._id,
+          { $inc: { contributions: 1 } },
+          { new: true } // optional: returns the updated document
+        );
+        console.log('Updated user contributions:', updatedUser?.contributions);
+      } catch (userUpdateError) {
+        console.error('Error updating user contributions:', userUpdateError);
+      }
     }
 
     await campaign.save();

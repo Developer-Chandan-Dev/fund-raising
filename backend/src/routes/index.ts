@@ -28,6 +28,7 @@ import {
 import { protect, admin } from '../middleware/auth';
 import upload from '../middleware/upload';
 import { validateImage } from '../middleware/validateImage';
+import { cardData } from '../controllers/dashboardController';
 
 const router = express.Router();
 
@@ -43,6 +44,9 @@ router.post('/campaigns', protect, admin, upload.single("image"), validateImage,
 router.put('/campaigns/:id', protect, admin, upload.single("image"), validateImage, updateCampaign);
 router.delete('/campaigns/:id', protect, admin, deleteCampaign);
 router.post('/donations/:campaignId', protect, donateToCampaign);
+
+// Dashboard Card details
+router.get('/cards', protect, cardData);
 
 // Community routes
 router.get('/community/members', getCommunityMembers);

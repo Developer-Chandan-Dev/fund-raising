@@ -6,7 +6,6 @@ import dotenv from 'dotenv';
 // Load environment variables specifically for this file
 dotenv.config();
 
-console.log(process.env.CLOUDINARY_CLOUD_NAME, 5);
 // Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
