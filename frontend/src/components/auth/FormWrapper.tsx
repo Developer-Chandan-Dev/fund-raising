@@ -27,7 +27,7 @@ export const FormWrapper = ({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl font-bold mb-4">Your Brand</h1>
+            <h1 className="text-4xl font-bold mb-4">Intern Fund</h1>
             <p className="text-xl opacity-90">
               Transform your workflow with our platform
             </p>

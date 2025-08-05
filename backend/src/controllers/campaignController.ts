@@ -327,3 +327,18 @@ export const donateToCampaign = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to process donation' });
   }
 };
+
+
+export const recentCampaigns = async (req: Request, res: Response) => {
+  try {
+    const campaigns = await Campaign.find()
+      .sort({ createdAt: -1 }) // newest first
+      .limit(5)
+      .lean(); // optional: returns plain objects instead of full Mongoose docs
+
+    return res.status(200).json({ campaigns, success: true });
+  } catch (error) {
+    console.error("recentCampaigns error:", error);
+    return res.status(500).json({ message: "Server error debug", success: false });
+  }
+};

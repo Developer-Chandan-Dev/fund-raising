@@ -1,12 +1,22 @@
-// src/pages/AdminDashboardPage.tsx
-import { Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { BarChart4, Users, DollarSign, ArrowRight, PlusCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  BarChart4,
+  Users,
+  DollarSign,
+  ArrowRight,
+  PlusCircle,
+} from "lucide-react";
+import apiService from "@/api/client";
 
 const AdminDashboardPage = () => {
   const { user } = useAuth();
+
+  const [recentCampaigns, setRecentCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (user?.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
@@ -36,36 +46,26 @@ const AdminDashboardPage = () => {
     },
   ];
 
-  const recentCampaigns = [
-    {
-      id: 1,
-      title: "Summer Internship Program",
-      status: "Active",
-      raised: "$34,250",
-      goal: "$50,000",
-    },
-    {
-      id: 2,
-      title: "Tech Skill Development",
-      status: "Active",
-      raised: "$12,750",
-      goal: "$25,000",
-    },
-    {
-      id: 3,
-      title: "Mentorship Program",
-      status: "Completed",
-      raised: "$15,000",
-      goal: "$15,000",
-    },
-    {
-      id: 4,
-      title: "Intern Housing Initiative",
-      status: "Draft",
-      raised: "$0",
-      goal: "$30,000",
-    },
-  ];
+  const fetchRecentData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiService.recentCampaigns();
+      // assuming API returns { campaigns: [...] }
+      setRecentCampaigns(response.data.campaigns || []);
+    } catch (err) {
+      console.error("Failed to get recent campaigns.", err);
+      setError("Failed to load recent campaigns.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRecentData();
+  }, []);
+
+  console.log(recentCampaigns);
 
   return (
     <div className="flex min-h-screen">
@@ -125,6 +125,9 @@ const AdminDashboardPage = () => {
               </Button>
             </div>
 
+            {loading && <p>Loading recent campaigns...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
@@ -147,8 +150,8 @@ const AdminDashboardPage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {recentCampaigns.map((campaign) => (
-                    <tr key={campaign.id}>
+                  {recentCampaigns.map((campaign: any) => (
+                    <tr key={campaign.id || campaign._id}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {campaign.title}
@@ -168,10 +171,10 @@ const AdminDashboardPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {campaign.raised}
+                        ${campaign.raisedAmount}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {campaign.goal}
+                        ${campaign.goalAmount}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <a
@@ -186,6 +189,17 @@ const AdminDashboardPage = () => {
                       </td>
                     </tr>
                   ))}
+
+                  {!loading && recentCampaigns.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-4 text-center text-sm text-gray-500"
+                      >
+                        No recent campaigns found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

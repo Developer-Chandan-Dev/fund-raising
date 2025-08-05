@@ -37,6 +37,9 @@ const apiService = {
       'Content-Type': 'multipart/form-data', // Required for file uploads
     }
   }),
+  recentCampaigns: () => apiClient.get('/recent/campaigns', {
+    withCredentials: true,
+  }),
   getCardData: () => apiClient.get('/cards', {
     withCredentials: true,
   }),

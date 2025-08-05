@@ -12,6 +12,7 @@ import {
   updateCampaign,
   deleteCampaign,
   donateToCampaign,
+  recentCampaigns,
 } from '../controllers/campaignController';
 import {
   getCommunityMembers,
@@ -43,6 +44,7 @@ router.get('/campaigns/:id', getCampaign);
 router.post('/campaigns', protect, admin, upload.single("image"), validateImage, createCampaign);
 router.put('/campaigns/:id', protect, admin, upload.single("image"), validateImage, updateCampaign);
 router.delete('/campaigns/:id', protect, admin, deleteCampaign);
+router.get('/recent/campaigns', protect, recentCampaigns);
 router.post('/donations/:campaignId', protect, donateToCampaign);
 
 // Dashboard Card details
