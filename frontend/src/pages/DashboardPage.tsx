@@ -29,7 +29,7 @@ const DashboardPage = () => {
   const fetchCardData = async () => {
     try {
       const response = await apiService.getCardData();
-      console.log(response.data);
+
       if (response) {
         setActiveCampaigns(response.data.activeCampaigns);
         setContributions(response.data.contributions);

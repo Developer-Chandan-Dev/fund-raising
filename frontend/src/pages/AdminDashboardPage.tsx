@@ -65,8 +65,6 @@ const AdminDashboardPage = () => {
     fetchRecentData();
   }, []);
 
-  console.log(recentCampaigns);
-
   return (
     <div className="flex min-h-screen">
       <main className="flex-1 bg-gray-50 px-4 py-8 sm:p-8 overflow-auto">
