@@ -13,6 +13,7 @@ import CampaignCard from "@/components/dashboard/CampaignCard";
 import useCampaigns from "@/hooks/useCampaigns";
 import CampaignSkeleton from "@/components/dashboard/skeletons/CampaignSkeleton";
 import EmptyState from "@/components/dashboard/EmptyState";
+import type { ICampaign } from "@/types/campaign";
 
 const CampaignPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,7 +113,7 @@ const CampaignPage = () => {
               campaigns.map((campaign, index) => (
                 <CampaignCard
                   key={index}
-                  campaign={campaign}
+                  campaign={campaign as ICampaign}
                   showStatus={true}
                 />
               ))}

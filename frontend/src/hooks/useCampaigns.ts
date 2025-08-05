@@ -1,21 +1,10 @@
 // src/hooks/useCampaigns.ts
 import { useState, useEffect } from 'react';
 import apiService from '@/api/client';
-
-interface Campaign {
-  id: string;
-  title: string;
-  description: string;
-  goalAmount: number;
-  raisedAmount: number;
-  category: string;
-  status: 'active' | 'completed';
-  imageUrl: string;
-  createdAt: string;
-}
+import type { ICampaign } from '@/types/campaign';
 
 interface UseCampaignsResult {
-  campaigns: Campaign[];
+  campaigns: ICampaign[];
   loading: boolean;
   error: string | null;
   totalCount: number;
@@ -23,7 +12,7 @@ interface UseCampaignsResult {
 }
 
 const useCampaigns = (initialParams = {}): UseCampaignsResult => {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<ICampaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
