@@ -67,7 +67,7 @@ export const saveCampaign = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-  // Validate campaign ID
+    // Validate campaign ID
     if (!req.params.id || !Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: 'Invalid campaign ID' });
     }
@@ -159,3 +159,43 @@ export const contributeToCampaign = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const savedCampaigns = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized", success: false });
+    }
+    const userId = req.user._id.toString();
+    const savedCampaigns = await User.find({ _id: userId }).select("savedCampaigns");
+
+    if (savedCampaigns.length === 0) {
+      return res.status(200).json({ savedCampaigns: [], success: true })
+    }
+    console.log(savedCampaigns, 17)
+
+    res.status(200).json(savedCampaigns);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server Error", success: false })
+  }
+}
+
+export const likedCampaigns = async (req: Request, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized", success: false });
+    }
+    const userId = req.user._id.toString();
+    const savedCampaigns = await User.find({ _id: userId }).select("savedCampaigns");
+
+    if (savedCampaigns.length === 0) {
+      return res.status(200).json({ savedCampaigns: [], success: true })
+    }
+    console.log(savedCampaigns, 17)
+
+    res.status(200).json(savedCampaigns);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server Error", success: false })
+  }
+}
