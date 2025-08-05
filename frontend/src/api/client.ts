@@ -40,6 +40,14 @@ const apiService = {
   recentCampaigns: () => apiClient.get('/recent/campaigns', {
     withCredentials: true,
   }),
+  savedCampaigns: () => apiClient.get('/saved/campaigns', {
+    withCredentials: true,
+  }),
+  likedCampaigns: () => apiClient.get('/liked/campaigns', {
+    withCredentials: true,
+  }),
+
+
   getCardData: () => apiClient.get('/cards', {
     withCredentials: true,
   }),

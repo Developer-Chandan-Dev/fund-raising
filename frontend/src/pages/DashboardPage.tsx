@@ -8,6 +8,7 @@ import useCampaigns from "@/hooks/useCampaigns";
 import CampaignSkeleton from "@/components/dashboard/skeletons/CampaignSkeleton";
 import EmptyState from "@/components/dashboard/EmptyState";
 import apiService from "@/api/client";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
   const [activeCampaigns, setActiveCampaigns] = useState(0);
@@ -16,6 +17,8 @@ const DashboardPage = () => {
     tasksCompleted: 24,
     // contributions: 8,
   });
+
+  const navigate = useNavigate();
 
   const { campaigns, loading, error, fetchCampaigns } = useCampaigns({
     limit: 3,
@@ -103,7 +106,7 @@ const DashboardPage = () => {
               <h2 className="text-xl font-bold text-gray-800">
                 Active Campaigns
               </h2>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => navigate("/campaigns")}>
                 View all campaigns
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>

@@ -126,7 +126,9 @@ const Sidebar = () => {
         
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-4 px-4 py-3 rounded-lg bg-gray-50">
-            <div className="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10" />
+            <div className="bg-gray-200 border border-gray-300 rounded-xl w-10 h-10 overflow-hidden" >
+              <img src="/user-icon.png" className="w-full h-full object-fit" />
+            </div>
             <div>
               <p className="font-medium">{user?.name || 'User'}</p>
               <p className="text-sm text-gray-500">{user?.email || 'user@example.com'}</p>

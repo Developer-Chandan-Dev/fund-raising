@@ -26,6 +26,7 @@ import CreateCampaignPage from "./pages/CreateCampaignPage";
 import ProfilePage from "./pages/ProfilePage";
 
 import { AuthProvider } from "./context/AuthContext";
+import { SavedItemsProvider } from "./context/SavedItemsContext";
 
 const router = createBrowserRouter([
   {
@@ -95,8 +96,10 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster />
+      <SavedItemsProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </SavedItemsProvider>
     </AuthProvider>
   </React.StrictMode>
 );

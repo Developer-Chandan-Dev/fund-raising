@@ -24,6 +24,7 @@ import {
   followUser,
   saveCampaign,
   contributeToCampaign,
+  savedCampaigns,
 } from '../controllers/userController';
 
 import { protect, admin } from '../middleware/auth';
@@ -45,6 +46,9 @@ router.post('/campaigns', protect, admin, upload.single("image"), validateImage,
 router.put('/campaigns/:id', protect, admin, upload.single("image"), validateImage, updateCampaign);
 router.delete('/campaigns/:id', protect, admin, deleteCampaign);
 router.get('/recent/campaigns', protect, recentCampaigns);
+router.get("/saved/campaigns", protect, savedCampaigns)
+
+// Donation
 router.post('/donations/:campaignId', protect, donateToCampaign);
 
 // Dashboard Card details

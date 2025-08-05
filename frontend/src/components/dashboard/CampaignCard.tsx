@@ -6,44 +6,32 @@ import { Button } from "@/components/ui/button";
 import { Bookmark, Heart, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import apiService from "@/api/client";
+import { useSavedItems } from "@/hooks/useSavedItems";
+import type { ICampaign } from "@/types/campaign";
 
 interface CampaignCardProps {
-  campaign: {
-    _id?: string;
-    title: string;
-    description: string;
-    goalAmount: number;
-    raisedAmount: number;
-    category?: string;
-    status?: "active" | "completed";
-    imageUrl?: string;
-  };
+  campaign: ICampaign;
   showStatus?: boolean;
 }
 
 const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
-  const [isSaved, setIsSaved] = useState(false);
+  // const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const progress = Math.min(
     100,
     Math.round((campaign.raisedAmount / campaign.goalAmount) * 100)
   );
 
-  const handleSave = async () => {
-    try {
-      if(!campaign._id){
-        return;
-      }
-      await apiService.saveCampaign(campaign._id);
-      setIsSaved(!isSaved);
-    } catch (error) {
-      console.error("Error saving campaign:", error);
-    }
-  };
+  const { toggleSaved, isItemSaved } = useSavedItems();
+  const isSaved = isItemSaved(campaign?._id);
+
+  if (!campaign._id) {
+    return;
+  }
 
   const handleLike = async () => {
     try {
-      if(!campaign._id){
+      if (!campaign._id) {
         return;
       }
       await apiService.likeCampaign(campaign._id);
@@ -112,7 +100,7 @@ const CampaignCard = ({ campaign, showStatus = false }: CampaignCardProps) => {
               <Button
                 variant={isSaved ? "default" : "outline"}
                 size="icon"
-                onClick={handleSave}
+                 onClick={() => toggleSaved(campaign._id)}
               >
                 <Bookmark
                   className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`}
